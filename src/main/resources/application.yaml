@@ -1,0 +1,22 @@
+
+Spring:
+  thymeleaf:
+    cache: false
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 1000ms
+      password:
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+  mail:
+    host: smtp.163.com
+    username: maifuqla@163.com
+    password: HMPAKKZFCQTCHESF
+    nickname: 博启小分队
