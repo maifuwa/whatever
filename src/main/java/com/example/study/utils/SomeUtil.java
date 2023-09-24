@@ -1,5 +1,6 @@
 package com.example.study.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
@@ -8,10 +9,18 @@ import java.util.Locale;
 import java.util.Random;
 
 @Component
+@Slf4j
 public class SomeUtil {
 
     public static String[] getUserInfo(String userInfo) {
         String[] info = userInfo.split(" ");
+
+        if (info.length <2) {
+            return new String[]{"不知名设备", "不知名软件"};
+        }else if (info.length <6){
+            return new String[]{info[2], "不知名软件"};
+        }
+
         return new String[]{info[2], info[6].split("/")[0]};
     }
 
