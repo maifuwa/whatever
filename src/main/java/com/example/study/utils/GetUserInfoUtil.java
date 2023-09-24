@@ -1,16 +1,22 @@
 package com.example.study.utils;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.example.study.entity.IpAddress;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 
 @Component
 @Slf4j
-public class SomeUtil {
+public class GetUserInfoUtil {
 
     public static String[] getUserInfo(String userInfo) {
         String[] info = userInfo.split(" ");
@@ -32,6 +38,21 @@ public class SomeUtil {
     }
 
     public static int getVerifyCode() {
-        return  new Random().nextInt(899999) + 100000;
+        return new Random().nextInt(899999) + 100000;
+    }
+
+    public static String getAddress(Optional<IpAddress> optAdd) {
+        IpAddress address = optAdd.orElseGet(() -> {
+            IpAddress fail = new IpAddress();
+            fail.setStatus("fail");
+            return fail;
+        });
+
+        if (address.getStatus().equals("success")) {
+            return address.getCountry() + ","
+                    + address.getRegionName() + ","
+                    + address.getCity();
+        }
+       return "暂无地区信息";
     }
 }
