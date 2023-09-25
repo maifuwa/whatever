@@ -1,12 +1,8 @@
 package com.example.study.utils;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.example.study.entity.IpAddress;
+import com.example.study.pojo.auth.IpAddress;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;

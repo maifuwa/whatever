@@ -1,4 +1,4 @@
-package com.example.study.entity;
+package com.example.study.pojo.auth;
 
 import lombok.Data;
 

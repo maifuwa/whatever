@@ -1,4 +1,4 @@
-package com.example.study.entity;
+package com.example.study.pojo;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;

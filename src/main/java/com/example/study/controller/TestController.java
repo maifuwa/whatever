@@ -1,19 +1,14 @@
 package com.example.study.controller;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.example.study.entity.IpAddress;
+import com.example.study.pojo.auth.IpAddress;
 import com.example.study.utils.GetUserInfoUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Controller

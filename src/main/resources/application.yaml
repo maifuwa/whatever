@@ -2,6 +2,19 @@
 Spring:
   thymeleaf:
     cache: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/study
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true  # 日志打印SQL语句
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        highlight_sql: true  # 高亮SQL语句
   data:
     redis:
       host: 127.0.0.1

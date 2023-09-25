@@ -73,7 +73,7 @@
         <img src="cid:logo" alt="火狐logo" style="width: 60px; height: 60px">
     </div>
     <div class="header">
-        <h1>您是否登录了 <span th:text="${appName}">Firefox</span>？</h1>
+        <h1>您是否登录了 <span th:text="${appName}">myFurry</span>？</h1>
         <p>请确认您的登录活动，以确保账户安全：</p>
     </div>
 
@@ -92,10 +92,10 @@
     </div>
 
     <div class="userAgreement">
-        <p>如非本人操作，请立即<span>更改密码</span>。 如需了解更多信息，请访问 <span>Mozilla</span> 支持。</p>
+        <p>如非本人操作，请立即<span>更改密码</span>。 如需了解更多信息，请访问 <a href="https://github.com/maifuwa/whatever">项目地址</a></p>
         <p>Mozilla. 149 New Montgomery St, 4th Floor, San Francisco, CA 94105</p>
         <p><span>Mozilla 隐私政策</span></p>
-        <p><span>Firefox Cloud 服务条款</span></p>
+        <p><span><span th:text="${appName}"></span> Cloud 服务条款</span></p>
     </div>
 </body>
 </html>

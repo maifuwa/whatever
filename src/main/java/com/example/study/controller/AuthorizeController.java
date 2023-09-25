@@ -1,8 +1,9 @@
 package com.example.study.controller;
 
-import com.example.study.entity.IpAddress;
-import com.example.study.entity.RestBean;
-import com.example.study.server.AuthorizeServer;
+import com.example.study.pojo.auth.IpAddress;
+import com.example.study.pojo.RestBean;
+import com.example.study.server.MailServer;
+import com.example.study.utils.Const;
 import com.example.study.utils.GetUserInfoUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
@@ -23,21 +24,22 @@ import java.util.Optional;
 public class AuthorizeController {
 
     @Autowired
-    AuthorizeServer authorizeServer;
+    MailServer authorizeServer;
 
     @Autowired
     RestTemplate restTemplate;
 
-    @PostMapping("/verifyEmail")
+    @PostMapping("/verifyemail")
     public RestBean<Void> doVerify(@Email String email, HttpServletRequest request) {
         Map<String, Object> valueMap = new HashMap<>();
 
         String ip = request.getRemoteAddr();
-        IpAddress address =  restTemplate.getForObject("http://ip-api.com/json/"+ip, IpAddress.class);
+        IpAddress address =  restTemplate.getForObject(Const.API_IP_TO_LOCATION +ip, IpAddress.class);
         String[] info = GetUserInfoUtil.getUserInfo(request.getHeader("User-Agent"));
         String[] dataTime = GetUserInfoUtil.getDateTime();
         String code = String.valueOf(GetUserInfoUtil.getVerifyCode());
 
+        valueMap.put("appName", Const.APP_NAME);
         valueMap.put("ip", ip);
         valueMap.put("os", info[0]);
         valueMap.put("browser", info[1]);
@@ -48,4 +50,12 @@ public class AuthorizeController {
 
         return authorizeServer.sendVerifyEmail(email, valueMap);
     }
+
+    @PostMapping("login")
+    public RestBean<Void> doLogin() {
+        return RestBean.success();
+    }
+
+    @PostMapping("signup")
+    public RestBean<Void> doSignup() {return RestBean.success();}
 }

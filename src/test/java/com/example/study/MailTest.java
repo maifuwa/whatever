@@ -1,6 +1,6 @@
 package com.example.study;
 
-import com.example.study.server.AuthorizeServer;
+import com.example.study.server.MailServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class MailTest {
 
     @Autowired
-    AuthorizeServer server;
+    MailServer server;
 
     @Test
     void testSendMail() {
