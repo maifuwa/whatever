@@ -4,7 +4,7 @@ import com.example.study.pojo.RestBean;
 import com.example.study.pojo.dto.auth.Account;
 import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.repository.AccountRepository;
-import com.example.study.utils.Const;
+import com.example.study.utils.constant.UserConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().hasAnyAuthority(Const.ROLE_DEFAULT)
+                        .anyRequest().hasAnyAuthority(UserConst.ROLE_DEFAULT)
                 )
                 .formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")

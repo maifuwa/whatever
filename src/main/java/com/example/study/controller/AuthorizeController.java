@@ -1,22 +1,21 @@
 package com.example.study.controller;
 
-import com.example.study.pojo.ao.IpAddress;
 import com.example.study.pojo.RestBean;
+import com.example.study.server.GetUserInfoServer;
 import com.example.study.server.MailServer;
-import com.example.study.utils.Const;
-import com.example.study.utils.GetUserInfoUtil;
+import com.example.study.utils.SimpleUtils;
+import com.example.study.utils.constant.AppConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @Validated
@@ -24,10 +23,10 @@ import java.util.Optional;
 public class AuthorizeController {
 
     @Autowired
-    MailServer authorizeServer;
+    MailServer mailServer;
 
     @Autowired
-    RestTemplate restTemplate;
+    GetUserInfoServer getUserInfoServer;
 
     @PostMapping("signup")
     public RestBean<Void> doSignup() {return RestBean.success();}
@@ -37,21 +36,24 @@ public class AuthorizeController {
         Map<String, Object> valueMap = new HashMap<>();
 
         String ip = request.getRemoteAddr();
-        IpAddress address =  restTemplate.getForObject(Const.API_IP_TO_LOCATION +ip, IpAddress.class);
-        String[] info = GetUserInfoUtil.getUserInfo(request.getHeader("User-Agent"));
-        String[] dataTime = GetUserInfoUtil.getDateTime();
-        String code = String.valueOf(GetUserInfoUtil.getVerifyCode());
+        String userAgent = request.getHeader("User-Agent");
 
-        valueMap.put("appName", Const.APP_NAME);
+        String address = getUserInfoServer.getUserAddress(ip);
+        String[] deviceAndBrowser = getUserInfoServer.getDeviceAndBrowser(userAgent);
+        String[] dateAndTime = SimpleUtils.getDateTime();
+        int code = SimpleUtils.getVerifyCode();
+
+
+        valueMap.put("appName", AppConst.APP_NAME);
         valueMap.put("ip", ip);
-        valueMap.put("os", info[0]);
-        valueMap.put("browser", info[1]);
-        valueMap.put("address", GetUserInfoUtil.getAddress(Optional.ofNullable(address)));
-        valueMap.put("date", dataTime[0]);
-        valueMap.put("time", dataTime[1]);
+        valueMap.put("os", deviceAndBrowser[0]);
+        valueMap.put("browser", deviceAndBrowser[1]);
+        valueMap.put("address", address);
+        valueMap.put("date", dateAndTime[0]);
+        valueMap.put("time", dateAndTime[1]);
         valueMap.put("code", code);
 
-        return authorizeServer.sendVerifyEmail(email, valueMap);
+        return mailServer.sendVerifyEmail(email, valueMap);
     }
 
 }

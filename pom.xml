@@ -34,6 +34,13 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!--分析User-Agent-->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+
         <!--数据持久化-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

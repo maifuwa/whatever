@@ -1,13 +1,11 @@
 package com.example.study.utils;
 
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.MailMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,7 +14,6 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Map;
-import java.util.Optional;
 
 
 @Component
@@ -46,7 +43,7 @@ public class MailUtil {
     }
 
 
-    public MimeMessageHelper sendTemplateMessage(String to, String subject, Map<String, Object> valueMap, String templateName, MimeMessage message) throws MessagingException {
+    private MimeMessageHelper sendTemplateMessage(String to, String subject, Map<String, Object> valueMap, String templateName, MimeMessage message) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         message.setFrom(nickname + "<" + from + ">");
         helper.setTo(to);

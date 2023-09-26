@@ -5,7 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -25,7 +25,7 @@ public class Account {
 
     @Temporal(TemporalType.DATE)
     @CreatedDate
-    Date createDate = new Date();
+    Instant createDate = Instant.now();
 
     String role;
 }
