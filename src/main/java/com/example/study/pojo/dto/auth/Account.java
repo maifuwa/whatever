@@ -1,4 +1,4 @@
-package com.example.study.pojo.auth;
+package com.example.study.pojo.dto.auth;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,11 +15,12 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     String name;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     String password;
-    @Column(nullable = false, unique = true)
+
+    @Column(nullable = false, unique = true, length = 50)
     String email;
 
     @Temporal(TemporalType.DATE)

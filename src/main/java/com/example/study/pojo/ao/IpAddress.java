@@ -1,4 +1,4 @@
-package com.example.study.pojo.auth;
+package com.example.study.pojo.ao;
 
 import lombok.Data;
 

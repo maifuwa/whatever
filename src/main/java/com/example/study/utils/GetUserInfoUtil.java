@@ -1,6 +1,6 @@
 package com.example.study.utils;
 
-import com.example.study.pojo.auth.IpAddress;
+import com.example.study.pojo.ao.IpAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +13,7 @@ import java.util.Random;
 @Component
 @Slf4j
 public class GetUserInfoUtil {
+
 
     public static String[] getUserInfo(String userInfo) {
         String[] info = userInfo.split(" ");

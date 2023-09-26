@@ -1,6 +1,6 @@
 package com.example.study.controller;
 
-import com.example.study.pojo.auth.IpAddress;
+import com.example.study.pojo.ao.IpAddress;
 import com.example.study.pojo.RestBean;
 import com.example.study.server.MailServer;
 import com.example.study.utils.Const;
@@ -29,6 +29,9 @@ public class AuthorizeController {
     @Autowired
     RestTemplate restTemplate;
 
+    @PostMapping("signup")
+    public RestBean<Void> doSignup() {return RestBean.success();}
+
     @PostMapping("/verifyemail")
     public RestBean<Void> doVerify(@Email String email, HttpServletRequest request) {
         Map<String, Object> valueMap = new HashMap<>();
@@ -43,7 +46,7 @@ public class AuthorizeController {
         valueMap.put("ip", ip);
         valueMap.put("os", info[0]);
         valueMap.put("browser", info[1]);
-        valueMap.put("address", GetUserInfoUtil.getAddress(Optional.of(address)));
+        valueMap.put("address", GetUserInfoUtil.getAddress(Optional.ofNullable(address)));
         valueMap.put("date", dataTime[0]);
         valueMap.put("time", dataTime[1]);
         valueMap.put("code", code);
@@ -51,11 +54,4 @@ public class AuthorizeController {
         return authorizeServer.sendVerifyEmail(email, valueMap);
     }
 
-    @PostMapping("login")
-    public RestBean<Void> doLogin() {
-        return RestBean.success();
-    }
-
-    @PostMapping("signup")
-    public RestBean<Void> doSignup() {return RestBean.success();}
 }

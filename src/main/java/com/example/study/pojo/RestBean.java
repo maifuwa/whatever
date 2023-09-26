@@ -15,6 +15,13 @@ public record RestBean<T>(long id, int code, T data, String message) {
         return new RestBean<>(requestId(), 200, data, "请求成功");
     }
 
+    public static <T> RestBean<T> unauthorized(String message) {
+        return RestBean.failure(401, message);
+    }
+    public static <T> RestBean<T> forbidden(String message) {
+        return RestBean.failure(403, message);
+    }
+
     public static <T> RestBean<T> failure(int code, String message) {
         return new RestBean<>(requestId(), code, null, message);
     }
