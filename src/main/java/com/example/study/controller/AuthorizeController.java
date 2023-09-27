@@ -4,12 +4,11 @@ import com.example.study.pojo.RestBean;
 import com.example.study.server.GetUserInfoServer;
 import com.example.study.server.MailServer;
 import com.example.study.utils.SimpleUtils;
-import com.example.study.utils.constant.AppConst;
+import com.example.study.constant.AppConst;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,10 +21,10 @@ import java.util.Map;
 @RequestMapping("/api/auth/")
 public class AuthorizeController {
 
-    @Autowired
+    @Resource
     MailServer mailServer;
 
-    @Autowired
+    @Resource
     GetUserInfoServer getUserInfoServer;
 
     @PostMapping("signup")

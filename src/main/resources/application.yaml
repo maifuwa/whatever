@@ -21,13 +21,17 @@ Spring:
       port: 6379
       database: 0
       timeout: 1000ms
-      password:
       lettuce:
         pool:
           max-active: 16
           max-idle: 8
           min-idle: 0
           max-wait: -1ms
+  security:
+    jwt:
+      key: "nihaonihaonihaoa"
+      expire: 72
+
   mail:
     host: smtp.163.com
     username: maifuqla@163.com

@@ -1,9 +1,9 @@
 package com.example.study.server.impl;
 
 import com.example.study.server.GetUserInfoServer;
-import com.example.study.utils.constant.ApiConst;
+import com.example.study.constant.ApiConst;
 import eu.bitwalker.useragentutils.UserAgent;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 public class GetUserInfoServerImpl implements GetUserInfoServer {
 
-    @Autowired
+    @Resource
     RestTemplate restTemplate;
 
     @Override

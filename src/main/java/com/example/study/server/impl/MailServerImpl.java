@@ -3,11 +3,11 @@ package com.example.study.server.impl;
 import com.example.study.pojo.RestBean;
 import com.example.study.server.MailServer;
 import com.example.study.utils.MailUtil;
-import com.example.study.utils.constant.MailConst;
-import com.example.study.utils.constant.ResourcePathConst;
+import com.example.study.constant.MailConst;
+import com.example.study.constant.ResourcePathConst;
+import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class MailServerImpl implements MailServer {
 
-    @Autowired
+    @Resource
     MailUtil mailUtil;
 
     public RestBean<Void> sendVerifyEmail(String to, Map<String, Object> valueMap) {

@@ -26,4 +26,12 @@ public class SimpleUtils {
 
         return new String[]{date, time};
     }
+
+    public static String getData() {
+        return getDateTime()[0];
+    }
+
+    public static String getTime() {
+        return getDateTime()[1];
+    }
 }

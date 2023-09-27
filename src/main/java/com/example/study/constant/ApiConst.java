@@ -1,4 +1,4 @@
-package com.example.study.utils.constant;
+package com.example.study.constant;
 
 public class ApiConst {
 

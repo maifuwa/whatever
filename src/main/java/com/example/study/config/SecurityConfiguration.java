@@ -1,13 +1,15 @@
 package com.example.study.config;
 
+import com.example.study.filter.JwtAuthenticationFilter;
 import com.example.study.pojo.RestBean;
 import com.example.study.pojo.dto.auth.Account;
 import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.repository.AccountRepository;
-import com.example.study.utils.constant.UserConst;
+import com.example.study.constant.UserConst;
+import com.example.study.utils.JwtUtil;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,15 +19,24 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
+import java.util.List;
 
 @Configuration
 public class SecurityConfiguration {
 
-    @Autowired
+    @Resource
     AccountRepository repository;
+
+    @Resource
+    JwtUtil jwtUtil;
+
+    @Resource
+    JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,9 +62,11 @@ public class SecurityConfiguration {
                 .sessionManagement(conf -> conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)   // 暂时关闭csrf验证。之后考虑是否开启
                 .build();
     }
+
 
 
 
@@ -69,15 +82,16 @@ public class SecurityConfiguration {
         }else if (exceptionOrAuthentication instanceof  Authentication authentication) {
             User user = (User)authentication.getPrincipal();
             Account account = repository.findAccountByEmailOrName(user.getUsername());
-            if (account == null) {
-                writer.write(RestBean.forbidden("请检查你的用户名或邮箱").asJSONString());
-            }else {
-                AccountVo vo = new AccountVo();
-                vo.setName(account.getName());
-                vo.setEmail(account.getEmail());
-                vo.setRole(account.getRole());
-                writer.write(RestBean.success(vo).asJSONString());
-            }
+            List<String> roles = repository.getAllRolesById(account.getId());
+            Instant expireTime = jwtUtil.expireTime();
+            String jwt = jwtUtil.createJwt(account, roles, expireTime);
+
+            AccountVo vo = new AccountVo();
+            vo.setName(account.getName());
+            vo.setRoles(roles);
+            vo.setExpireTime(expireTime);
+            vo.setToken(jwt);
+            writer.write(RestBean.success(vo).asJSONString());
         }
     }
 
