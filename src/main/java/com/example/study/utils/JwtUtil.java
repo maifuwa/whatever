@@ -6,9 +6,12 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.example.study.constant.JwtConst;
 import com.example.study.pojo.dto.auth.Account;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: maifuwa
@@ -29,13 +33,16 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-
+    // jwt的签名校验密匙
     @Value("${Spring.security.jwt.key}")
     private String key;
 
+    // jwt的默认有效时间
     @Value("${Spring.security.jwt.expire}")
     private long expire;
 
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     /**
      * 使用配置文件，计算令牌过期时间
@@ -44,7 +51,6 @@ public class JwtUtil {
     public Instant expireTime() {
         return ZonedDateTime.now().plusHours(expire).toInstant();
     }
-
 
     /**
      * 使用传入的用户信息，创建jwt令牌
@@ -94,9 +100,8 @@ public class JwtUtil {
         try {
             DecodedJWT decodedJWT= jwtVerifier.verify(token);
             Map<String, Claim> claimMas = decodedJWT.getClaims();
-            return Instant.now().isAfter(claimMas.get("exp").asInstant()) ? null : decodedJWT;
+            return Instant.now().isAfter(claimMas.get("exp").asInstant()) || this.isInBlacklist(decodedJWT.getId()) ? null : decodedJWT;
         } catch (JWTVerificationException e) {
-            log.info("创建jwt解析器失败");
             return null;
         }
     }
@@ -115,7 +120,59 @@ public class JwtUtil {
                 .build();
     }
 
+    /**
+     * 从令牌中解析出用户 ID
+     * @param decodedJWT 包含token的jwt解析器
+     * @return userId
+     */
     public Integer parseToUserId(DecodedJWT decodedJWT) {
         return decodedJWT.getClaims().get("id").asInt();
+    }
+
+
+    /**
+     * 撤销jwt的有效性
+     * @param authorization 用户token
+     * @return boolean
+     */
+    public boolean revokeToken(String authorization) {
+        String token = this.parseAuthorization(authorization);
+        if (token == null) {
+            return false;
+        }
+
+        Algorithm algorithm = Algorithm.HMAC256(key);
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        try {
+            DecodedJWT decodedJWT= jwtVerifier.verify(token);
+            return putInBlacklist(decodedJWT.getId(), decodedJWT.getExpiresAtAsInstant());
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * 将jwt添加黑名单
+     * @param uuid jwt的uuid
+     * @param expireTime jwt的过期时间
+     * @return boolean
+     */
+    private boolean putInBlacklist(String uuid, Instant expireTime) {
+        if (this.isInBlacklist(uuid)) {
+            return false;
+        }
+
+        long expire = Math.max(expireTime.getEpochSecond() - Instant.now().getEpochSecond(), 0);
+        redisTemplate.opsForValue().set(JwtConst.JWT_BLACK_LIST + uuid, "", expire, TimeUnit.SECONDS);
+        return true;
+    }
+
+    /**
+     * 判断是否已经添加进黑名单
+     * @param uuid jwt的uuid
+     * @return boolean
+     */
+    private boolean isInBlacklist(String uuid) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(JwtConst.JWT_BLACK_LIST + uuid));
     }
 }

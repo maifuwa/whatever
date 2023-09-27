@@ -31,10 +31,8 @@ public class SecurityConfiguration {
 
     @Resource
     AccountRepository repository;
-
     @Resource
     JwtUtil jwtUtil;
-
     @Resource
     JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -49,10 +47,9 @@ public class SecurityConfiguration {
                         .loginProcessingUrl("/api/auth/login")
                         .successHandler(this::handleProcess)
                         .failureHandler(this::handleProcess)
-                        .permitAll()
                 )
                 .logout(conf -> conf
-                        .logoutUrl("/api/auth/logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
                 .exceptionHandling(conf -> conf
@@ -66,8 +63,6 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)   // 暂时关闭csrf验证。之后考虑是否开启
                 .build();
     }
-
-
 
 
     private void handleProcess(HttpServletRequest request, HttpServletResponse response,
@@ -97,11 +92,14 @@ public class SecurityConfiguration {
 
     private void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                          Authentication authentication) throws IOException {
-
         response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();
 
-        writer.write(RestBean.success().asJSONString());
+        if (jwtUtil.revokeToken(request.getHeader("Authorization"))) {
+            writer.write(RestBean.success("退出登录成功").asJSONString());
+            return;
+        }
+        writer.write(RestBean.unauthorized("Full authentication is required to access this resource").asJSONString());
     }
 
 }
