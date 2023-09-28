@@ -5,6 +5,7 @@ import com.example.study.constant.UserConst;
 import com.example.study.pojo.dto.auth.Account;
 import com.example.study.pojo.dto.auth.Role;
 import com.example.study.pojo.vo.request.RegisterVo;
+import com.example.study.pojo.vo.request.ResetPwdVo;
 import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.repository.AccountRepository;
 import com.example.study.repository.RoleRepository;
@@ -64,6 +65,9 @@ public class AccountServerImpl implements AccountServer {
     @Override
     public String sendEmailVerifyCode(String type, String email, String ip, String userAgent) {
         String key = this.getKey(type, email);
+        if ("reset".equals(type) && !accountRepository.existsAccountByEmailOrName(email, null)) {
+            return "请先注册";
+        }
         if (isEmailTimeOut(key)) {
             return "验证码仍有效，请不要频繁请求";
         }
@@ -79,6 +83,7 @@ public class AccountServerImpl implements AccountServer {
         if ("register".equals(type)) {
             return MailConst.VERIFY_REGISTER_EMAIL_DATA + email;
         }else if ("reset".equals(type)) {
+
             return MailConst.VERIFY_RESET_EMAIL_DATA + email;
         }
         return "";
@@ -119,5 +124,28 @@ public class AccountServerImpl implements AccountServer {
         return accountVo;
     }
 
+    @Override
+    public AccountVo resetPassword(ResetPwdVo vo) {
+        AccountVo accountVo = new AccountVo();
+        if (vo.getCode() == null) {
+            accountVo.setToken("请先获取验证码");
+        }else if (!vo.getCode().equals(redisTemplate.opsForValue().get(this.getKey("reset", vo.getEmail())))) {
+            accountVo.setToken("验证码错误");
+        }else {
+            Account account = accountRepository.findAccountByEmail(vo.getEmail());
+            account.setPassword(vo.getPassword());
+            accountRepository.save(account);
+
+            List<String> roles = accountRepository.getAllRolesById(account.getId());
+            Instant expireTime = jwtUtil.expireTime();
+            String jwt = jwtUtil.createJwt(account, roles, expireTime);
+
+            accountVo.setName(account.getName());
+            accountVo.setRoles(roles);
+            accountVo.setExpireTime(expireTime);
+            accountVo.setToken(jwt);
+        }
+        return accountVo;
+    }
 
 }

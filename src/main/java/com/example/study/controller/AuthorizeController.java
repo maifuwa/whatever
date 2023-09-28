@@ -2,6 +2,7 @@ package com.example.study.controller;
 
 import com.example.study.pojo.RestBean;
 import com.example.study.pojo.vo.request.RegisterVo;
+import com.example.study.pojo.vo.request.ResetPwdVo;
 import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.server.AccountServer;
 
@@ -27,7 +28,16 @@ public class AuthorizeController {
     @PostMapping("/signup")
     public RestBean<AccountVo> doSignup(@Valid @RequestBody RegisterVo vo) {
         AccountVo accountVo = accountServer.registerAccount(vo);
-        if (accountVo.getToken().length() < 20) {
+        if (accountVo.getToken().length() < 50) {
+            return RestBean.failure(400, accountVo.getToken());
+        }
+        return RestBean.success(accountVo);
+    }
+
+    @PostMapping("/reset")
+    public RestBean<AccountVo> doResetPassword(@Valid @RequestBody ResetPwdVo vo) {
+        AccountVo accountVo = accountServer.resetPassword(vo);
+        if (accountVo.getToken().length() < 50) {
             return RestBean.failure(400, accountVo.getToken());
         }
         return RestBean.success(accountVo);
@@ -41,5 +51,7 @@ public class AuthorizeController {
         return RestBean.success(accountServer.sendEmailVerifyCode(type, email, request.getRemoteAddr(), request.getHeader("User-Agent")));
 
     }
+
+
 
 }
