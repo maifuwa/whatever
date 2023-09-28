@@ -69,7 +69,6 @@ public class JwtUtil {
                 .withExpiresAt(expireTime)
                 .withIssuedAt(Instant.now())
                 .sign(algorithm);
-
     }
 
     /**

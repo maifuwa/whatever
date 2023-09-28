@@ -1,6 +1,8 @@
 package com.example.study.controller;
 
+import com.example.study.constant.MailConst;
 import com.example.study.pojo.RestBean;
+import com.example.study.pojo.dto.auth.Account;
 import com.example.study.pojo.vo.request.RegisterVo;
 import com.example.study.pojo.vo.request.ResetPwdVo;
 import com.example.study.pojo.vo.response.AccountVo;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Validated
 @RequestMapping("/api/auth/")
@@ -27,29 +31,27 @@ public class AuthorizeController {
 
     @PostMapping("/signup")
     public RestBean<AccountVo> doSignup(@Valid @RequestBody RegisterVo vo) {
-        AccountVo accountVo = accountServer.registerAccount(vo);
-        if (accountVo.getToken().length() < 50) {
-            return RestBean.failure(400, accountVo.getToken());
-        }
-        return RestBean.success(accountVo);
+       return this.parseAccountVo(accountServer.registerAccount(MailConst.VERIFY_EMAIL_TYPE_REGISTER, vo));
     }
 
     @PostMapping("/reset")
     public RestBean<AccountVo> doResetPassword(@Valid @RequestBody ResetPwdVo vo) {
-        AccountVo accountVo = accountServer.resetPassword(vo);
-        if (accountVo.getToken().length() < 50) {
-            return RestBean.failure(400, accountVo.getToken());
+        return this.parseAccountVo(accountServer.resetPassword(MailConst.VERIFY_EMAIL_TYPE_RESET, vo));
+    }
+
+    private RestBean<AccountVo> parseAccountVo(AccountVo vo) {
+        if (vo.getToken().length() < 50) {
+            return RestBean.failure(400, vo.getToken());
         }
-        return RestBean.success(accountVo);
+        return RestBean.success(vo);
     }
 
     @PostMapping("/verifyemail")
-    public RestBean<String> doVerify(@Email String email,
-                                     @Pattern(regexp = "(register|reset)") String type,
-                                     HttpServletRequest request) {
-
-        return RestBean.success(accountServer.sendEmailVerifyCode(type, email, request.getRemoteAddr(), request.getHeader("User-Agent")));
-
+    public RestBean<String> doVerify(@Email String email, String type, HttpServletRequest request) {
+        if (MailConst.VERIFY_EMAIL_TYPE.contains(type)) {
+            return RestBean.success(accountServer.sendEmailVerifyCode(type, email, request.getRemoteAddr(), request.getHeader("User-Agent")));
+        }
+        return RestBean.failure(400, "参数错误");
     }
 
 

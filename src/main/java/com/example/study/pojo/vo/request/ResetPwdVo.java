@@ -18,5 +18,6 @@ public class ResetPwdVo {
     @Length(min = 8, max = 20)
     String password;
 
+    @Length(min = 6, max = 6)
     String code;
 }

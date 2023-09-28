@@ -64,13 +64,11 @@ public class AccountServerImpl implements AccountServer {
 
     @Override
     public String sendEmailVerifyCode(String type, String email, String ip, String userAgent) {
-        String key = this.getKey(type, email);
-        if ("reset".equals(type) && !accountRepository.existsAccountByEmailOrName(email, null)) {
-            return "请先注册";
+        String key = this.canSendEmailVerifyCode(type, email);
+        if (key.length() < 16) {
+            return key;
         }
-        if (isEmailTimeOut(key)) {
-            return "验证码仍有效，请不要频繁请求";
-        }
+
         int code = SimpleUtils.getVerifyCode();
         Map<String, Object> data = Map.of("type", type, "email", email, "ip", ip, "userAgent", userAgent, "code", code);
         rabbitTemplate.convertAndSend(MailConst.EMAIL_SEND_MQ, data);
@@ -79,72 +77,76 @@ public class AccountServerImpl implements AccountServer {
         return "发送成功";
     }
 
-    private String getKey(String type, String email) {
-        if ("register".equals(type)) {
-            return MailConst.VERIFY_REGISTER_EMAIL_DATA + email;
-        }else if ("reset".equals(type)) {
-
-            return MailConst.VERIFY_RESET_EMAIL_DATA + email;
+    private String canSendEmailVerifyCode(String type, String email) {
+        String key = this.getKey(type, email);
+        if (!MailConst.VERIFY_EMAIL_TYPE_REGISTER.equals(type) &&
+                !accountRepository.existsAccountByEmailOrName(email, null)) {
+            return "请先注册";
+        } else if (this.getCode(key) != null) {
+            return "验证码仍有效，请不要频繁请求";
+        } else {
+            return key;
         }
-        return "";
     }
-    private boolean isEmailTimeOut(String key) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+
+    private String getKey(String type, String email) {
+        return "verify:" + type + ":email:" + email + ":code";
+    }
+
+    private String getCode(String key) {
+        return redisTemplate.opsForValue().get(key);
     }
 
     @Override
     @Transactional
-    public AccountVo registerAccount(RegisterVo vo) {
+    public AccountVo registerAccount(String type, RegisterVo vo) {
+        String name = vo.getName();
+        String email = vo.getEmail();
         AccountVo accountVo = new AccountVo();
-
-        if (accountRepository.existsAccountByEmailOrName(vo.getEmail(), vo.getUsername())) {
-           accountVo.setToken("用户名或邮箱已被注册");
-        }else if (vo.getCode() == null){
-            accountVo.setToken("请先获取验证码");
-        } else if (!vo.getCode().equals(redisTemplate.opsForValue().get(this.getKey("register", vo.getEmail())))) {
+        if (accountRepository.existsAccountByEmailOrName(email, name)) {
+            accountVo.setToken("用户名或邮箱已被注册");
+        } else if (!vo.getCode().equals(this.getCode(this.getKey(type, email)))) {
             accountVo.setToken("验证码错误");
-        }else {
+        } else {
             Account account = new Account();
-            account.setName(vo.getUsername());
-            account.setEmail(vo.getEmail());
+            account.setName(name);
+            account.setEmail(email);
             account.setPassword(passwordEncoder.encode(vo.getPassword()));
             List<Role> roles = roleRepository.findRolesByRoleNameIn(UserConst.ROLE_DEFAULT);
             account.setRoles(roles);
             accountRepository.save(account);
-
-            List<String> rolesName = roles.stream().map(Role::getRoleName).toList();
-            Instant expireTime = jwtUtil.expireTime();
-            String jwt = jwtUtil.createJwt(account, rolesName, expireTime);
-
-            accountVo.setName(account.getName());
-            accountVo.setRoles(rolesName);
-            accountVo.setExpireTime(expireTime);
-            accountVo.setToken(jwt);
+            return setAccountVo(account);
         }
         return accountVo;
     }
 
     @Override
-    public AccountVo resetPassword(ResetPwdVo vo) {
+    public AccountVo resetPassword(String type, ResetPwdVo vo) {
         AccountVo accountVo = new AccountVo();
-        if (vo.getCode() == null) {
-            accountVo.setToken("请先获取验证码");
-        }else if (!vo.getCode().equals(redisTemplate.opsForValue().get(this.getKey("reset", vo.getEmail())))) {
+        if (!accountRepository.existsAccountByEmailOrName(vo.getEmail(), null)) {
+            accountVo.setToken("请先注册");
+        } else if (!vo.getCode().equals(this.getCode(this.getKey(type, vo.getEmail())))) {
             accountVo.setToken("验证码错误");
-        }else {
-            Account account = accountRepository.findAccountByEmail(vo.getEmail());
-            account.setPassword(vo.getPassword());
+        } else {
+            Account account = accountRepository.findAccountByEmailOrName(vo.getEmail());
+            account.setPassword(passwordEncoder.encode(vo.getPassword()));
             accountRepository.save(account);
-
-            List<String> roles = accountRepository.getAllRolesById(account.getId());
-            Instant expireTime = jwtUtil.expireTime();
-            String jwt = jwtUtil.createJwt(account, roles, expireTime);
-
-            accountVo.setName(account.getName());
-            accountVo.setRoles(roles);
-            accountVo.setExpireTime(expireTime);
-            accountVo.setToken(jwt);
+            return setAccountVo(account);
         }
+        return accountVo;
+    }
+
+
+    public AccountVo setAccountVo(Account account) {
+        AccountVo accountVo = new AccountVo();
+        List<String> roles = accountRepository.getAllRolesById(account.getId());
+        Instant expireTime = jwtUtil.expireTime();
+        String jwt = jwtUtil.createJwt(account, roles, expireTime);
+
+        accountVo.setName(account.getName());
+        accountVo.setRoles(roles);
+        accountVo.setExpireTime(expireTime);
+        accountVo.setToken(jwt);
         return accountVo;
     }
 

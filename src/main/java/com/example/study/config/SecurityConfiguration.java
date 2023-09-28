@@ -6,6 +6,7 @@ import com.example.study.pojo.dto.auth.Account;
 import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.repository.AccountRepository;
 import com.example.study.constant.UserConst;
+import com.example.study.server.AccountServer;
 import com.example.study.utils.JwtUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,8 @@ public class SecurityConfiguration {
 
     @Resource
     AccountRepository repository;
+    @Resource
+    AccountServer accountServer;
     @Resource
     JwtUtil jwtUtil;
     @Resource
@@ -77,16 +80,7 @@ public class SecurityConfiguration {
         }else if (exceptionOrAuthentication instanceof  Authentication authentication) {
             User user = (User)authentication.getPrincipal();
             Account account = repository.findAccountByEmailOrName(user.getUsername());
-            List<String> roles = repository.getAllRolesById(account.getId());
-            Instant expireTime = jwtUtil.expireTime();
-            String jwt = jwtUtil.createJwt(account, roles, expireTime);
-
-            AccountVo vo = new AccountVo();
-            vo.setName(account.getName());
-            vo.setRoles(roles);
-            vo.setExpireTime(expireTime);
-            vo.setToken(jwt);
-            writer.write(RestBean.success(vo).asJSONString());
+            writer.write(RestBean.success(accountServer.setAccountVo(account)).asJSONString());
         }
     }
 
