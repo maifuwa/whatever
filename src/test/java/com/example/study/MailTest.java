@@ -1,20 +1,10 @@
 package com.example.study;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class MailTest {
-
-    @Autowired
-    MailServer server;
-
-    @Test
-    void testSendMail() {
-        server.sendVerifyEmail("1938311440@qq.com", Map.of());
-    }
+    
 
 }

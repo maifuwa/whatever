@@ -2,6 +2,7 @@ package com.example.study.pojo.dto.auth;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: maifuwa

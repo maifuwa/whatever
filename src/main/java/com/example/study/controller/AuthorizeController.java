@@ -2,6 +2,7 @@ package com.example.study.controller;
 
 import com.example.study.pojo.RestBean;
 import com.example.study.pojo.vo.request.RegisterVo;
+import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.server.AccountServer;
 
 import jakarta.annotation.Resource;
@@ -23,10 +24,13 @@ public class AuthorizeController {
     @Resource
     AccountServer accountServer;
 
-    @PostMapping("signup")
-    public RestBean<Void> doSignup(@RequestBody @Valid RegisterVo vo) {
-
-        return RestBean.success();
+    @PostMapping("/signup")
+    public RestBean<AccountVo> doSignup(@Valid @RequestBody RegisterVo vo) {
+        AccountVo accountVo = accountServer.registerAccount(vo);
+        if (accountVo.getToken().length() < 20) {
+            return RestBean.failure(400, accountVo.getToken());
+        }
+        return RestBean.success(accountVo);
     }
 
     @PostMapping("/verifyemail")

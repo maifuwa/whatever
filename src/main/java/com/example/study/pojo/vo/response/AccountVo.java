@@ -1,6 +1,7 @@
 package com.example.study.pojo.vo.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
