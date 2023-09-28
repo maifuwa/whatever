@@ -1,9 +1,9 @@
 package com.example.study.utils;
 
+import com.example.study.pojo.bo.MailParameter;
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,10 +14,14 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Map;
+import java.util.Optional;
 
-
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午6:27
+ * @description: 发送邮件的工具类
+ */
 @Component
-@Slf4j
 public class MailUtil {
 
     @Resource
@@ -32,52 +36,68 @@ public class MailUtil {
     @Value("${Spring.mail.nickname}")
     String nickname;
 
-    public void sendTxtMessage(String to, String subject, String content) {
+    /**
+     * 获取邮件的from
+     * @return String
+     */
+    private String getFrom() {
+        return nickname + "<" + from + ">";
+    }
+
+    /**
+     * 发送文本邮件
+     * @param mailParameter 邮件参数
+     */
+    public void sendTxtMessage(MailParameter mailParameter) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject(subject);
-        message.setText(content);
-        message.setTo(to);
-        message.setFrom(nickname + "<" + from + ">");
+        message.setSubject(mailParameter.getSubject());
+        message.setText(mailParameter.getContent());
+        message.setTo(mailParameter.getTo());
+        message.setFrom(this.getFrom());
 
         sender.send(message);
     }
 
-
-    private MimeMessageHelper sendTemplateMessage(String to, String subject, Map<String, Object> valueMap, String templateName, MimeMessage message) throws MessagingException {
+    /**
+     * 发送html邮件
+     * @param mailParameter 邮件参数
+     * @throws MessagingException 邮件发送失败异常
+     */
+    public void sendHtmlMessage(MailParameter mailParameter) throws MessagingException {
+        MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        message.setFrom(nickname + "<" + from + ">");
-        helper.setTo(to);
-        helper.setSubject(subject);
+        helper.setFrom(this.getFrom());
+        helper.setTo(mailParameter.getTo());
+        helper.setSubject(mailParameter.getSubject());
 
-        // 利用 Thymeleaf 引擎渲染 HTML
+        // 获取要发送 html 字符串
         Context context = new Context();
-        context.setVariables(valueMap);  // 设置注入的变量
-        String content = templateEngine.process(templateName, context);
+        Optional.ofNullable(mailParameter.getTemplateEngineVariables()).ifPresent(context::setVariables);
+        String content = templateEngine.process(mailParameter.getTemplateName(), context);
         helper.setText(content, true);
 
-        return helper;
-    }
+        // 添加图片 到邮件附件
+        Optional.ofNullable(mailParameter.getImagesAndPath()).ifPresent((imagesAndPath) -> {
+            this.addImage(imagesAndPath, helper);
+        });
 
-
-    public void sendTemplateMessage(String to, String subject, Map<String, Object> valueMap, String templateName) throws MessagingException {
-        MimeMessage message = sender.createMimeMessage();
-        sendTemplateMessage(to, subject, valueMap, templateName, message);
         sender.send(message);
     }
 
-    public void sendTemplateMessage(String to, String subject, Map<String, Object> valueMap, String templateName, Map<String, String> imagesAndPath) throws MessagingException {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper helper = sendTemplateMessage(to, subject, valueMap, templateName, message);
-        addImage(imagesAndPath, helper);
-        sender.send(message);
-    }
-
-
-    public void addImage(Map<String, String> imagesAndPath, MimeMessageHelper helper) throws MessagingException {
+    /**
+     * 给邮件添加图片附件
+     * @param imagesAndPath 图片名字和路径
+     * @param helper 邮件配置类
+     */
+    private void addImage(Map<String, String> imagesAndPath, MimeMessageHelper helper) {
         for (Map.Entry<String, String> entry : imagesAndPath.entrySet()) {
             String image = entry.getKey();
             String path = entry.getValue();
-            helper.addInline(image, new ClassPathResource(path));
+            try {
+                helper.addInline(image, new ClassPathResource(path));
+            } catch (MessagingException e) {
+                throw new RuntimeException("图片路径不对");
+            }
         }
     }
 
