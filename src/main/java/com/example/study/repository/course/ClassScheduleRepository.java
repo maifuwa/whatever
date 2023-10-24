@@ -17,8 +17,8 @@ import java.util.List;
 public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Long> {
     ClassSchedule getSchoolScheduleByCourseAndClassRoomAndTeacherAndCourseNumAndDayAndWeek(Course course, ClassRoom classRoom, String teacher, String courseNum, Integer day, String week);
 
-    @Query(nativeQuery = true, value = "select * from school_schedule  where id in (" +
-            "select school_schedule_id from school_schedule_users where account_id = :accountId)")
+    @Query(nativeQuery = true, value = "select * from class_schedule  where id in (" +
+            "select class_schedule_id from class_schedule_accounts where accounts_id = :accountId)")
     List<ClassSchedule> getSchoolSchedulesByAccount_Id(@Param("accountId") Integer accountId);
 
     List<ClassSchedule> getSchoolSchedulesByCourseNumLike(String like);

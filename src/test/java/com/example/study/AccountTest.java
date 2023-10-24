@@ -42,7 +42,7 @@ public class AccountTest {
     void addAccount() {
         Account account = new Account();
         account.setName("张三");
-        account.setEmail("1938311440@qq.com");
+        account.setEmail("46546564565@qq.com");
         account.setPassword(encoder.encode("123456789"));
         account.setRoles(addRoles());
         System.out.println(repository.save(account));

@@ -1,5 +1,6 @@
 
 Spring:
+  verifiycode: 123456789
   thymeleaf:
     cache: false
   datasource:
