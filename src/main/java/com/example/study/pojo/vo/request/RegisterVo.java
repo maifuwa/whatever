@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 /**
  * @author: maifuwa
  * @date: 2023/9/27 下午6:27
- * @description: 注册账户的vo类
+ * @description: 注册账户vo类
  */
 @Data
 public class RegisterVo {

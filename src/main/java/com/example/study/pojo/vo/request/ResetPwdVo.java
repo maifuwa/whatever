@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 /**
  * @author: maifuwa
  * @date: 2023/9/28 下午7:24
- * @description: 重置密码的vo类
+ * @description: 重置密码vo类
  */
 @Data
 public class ResetPwdVo {

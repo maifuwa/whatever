@@ -17,6 +17,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午1:35
+ * @description: 验证jwt的过滤器
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

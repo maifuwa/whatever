@@ -1,5 +1,6 @@
 package com.example.study.config;
 
+import com.example.study.constant.MailConst;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,9 @@ public class RabbitmqConfiguration {
     @Bean("mailQueue")
     public Queue createMailQueue() {
         return QueueBuilder
-                .durable("mail")
+                .durable(MailConst.EMAIL_SEND_MQ)
                 .build();
     }
+
+
 }

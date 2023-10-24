@@ -9,6 +9,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午1:35
+ * @description: 获取用户信息实体类
+ */
 @Service
 public class GetUserInfoServerImpl implements GetUserInfoServer {
 

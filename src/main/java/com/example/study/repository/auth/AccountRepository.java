@@ -1,4 +1,4 @@
-package com.example.study.repository;
+package com.example.study.repository.auth;
 
 import com.example.study.pojo.dto.auth.Account;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -3,8 +3,7 @@ package com.example.study.config;
 import com.example.study.filter.JwtAuthenticationFilter;
 import com.example.study.pojo.RestBean;
 import com.example.study.pojo.dto.auth.Account;
-import com.example.study.pojo.vo.response.AccountVo;
-import com.example.study.repository.AccountRepository;
+import com.example.study.repository.auth.AccountRepository;
 import com.example.study.constant.UserConst;
 import com.example.study.server.AccountServer;
 import com.example.study.utils.JwtUtil;
@@ -24,8 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.Instant;
-import java.util.List;
 
 @Configuration
 public class SecurityConfiguration {

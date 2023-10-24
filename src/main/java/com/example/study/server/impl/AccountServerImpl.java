@@ -7,8 +7,8 @@ import com.example.study.pojo.dto.auth.Role;
 import com.example.study.pojo.vo.request.RegisterVo;
 import com.example.study.pojo.vo.request.ResetPwdVo;
 import com.example.study.pojo.vo.response.AccountVo;
-import com.example.study.repository.AccountRepository;
-import com.example.study.repository.RoleRepository;
+import com.example.study.repository.auth.AccountRepository;
+import com.example.study.repository.auth.RoleRepository;
 import com.example.study.server.AccountServer;
 import com.example.study.utils.JwtUtil;
 import com.example.study.utils.SimpleUtils;
@@ -29,6 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午1:35
+ * @description: 用户注册登陆服务实现类
+ */
 @Slf4j
 @Service
 public class AccountServerImpl implements AccountServer {

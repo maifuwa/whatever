@@ -9,6 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Random;
 
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午1:35
+ * @description: 抽离出的一些方法
+ */
 @Component
 @Slf4j
 public class SimpleUtils {

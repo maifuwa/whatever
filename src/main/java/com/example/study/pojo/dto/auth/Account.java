@@ -8,6 +8,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * @author: maifuwa
+ * @date: 2023/9/27 下午1:35
+ * @description: 用户表
+ */
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -29,4 +34,9 @@ public class Account {
 
     @ManyToMany(cascade = {CascadeType.PERSIST})
     List<Role> roles;
+
+    public long getQQNum() {
+        String qqNum = this.email.split("@")[0];
+        return Long.getLong(qqNum);
+    }
 }
