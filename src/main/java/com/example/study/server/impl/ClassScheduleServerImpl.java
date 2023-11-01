@@ -101,7 +101,7 @@ public class ClassScheduleServerImpl implements ClassScheduleServer {
             throw new RuntimeException("课程非法录入 课名：" + fullName + " 地址：" + location);
         }
 
-        ClassSchedule schedule = scheduleRepository.getSchoolScheduleByCourseAndClassRoomAndTeacherAndCourseNumAndDayAndWeek(course, classRoom, teacher, courseNum, day, week);
+        ClassSchedule schedule = scheduleRepository.findSchoolScheduleByCourseAndClassRoomAndTeacherAndCourseNumAndDayAndWeek(course, classRoom, teacher, courseNum, day, week);
         if (schedule != null) {
             return schedule;
         }
@@ -162,7 +162,7 @@ public class ClassScheduleServerImpl implements ClassScheduleServer {
            return null;
         }
 
-        return scheduleRepository.getSchoolScheduleByCourseAndClassRoomAndTeacherAndCourseNumAndDayAndWeek(course, classRoom, teacher, courseNum, day, week);
+        return scheduleRepository.findSchoolScheduleByCourseAndClassRoomAndTeacherAndCourseNumAndDayAndWeek(course, classRoom, teacher, courseNum, day, week);
     }
 
 
@@ -234,7 +234,7 @@ public class ClassScheduleServerImpl implements ClassScheduleServer {
     }
 
     private List<ClassSchedule> getSchedulesFormAccount(Integer accountId) {
-        return scheduleRepository.getSchoolSchedulesByAccount_Id(accountId);
+        return scheduleRepository.getClassSchedulesByAccountsContains(accountRepository.findById(accountId).get());
     }
 
     private List<JSONObject> parseCourseJSON(String courseJson) {

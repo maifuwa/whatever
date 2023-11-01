@@ -41,3 +41,10 @@ Spring:
     username: maifuqla@163.com
     password: HMPAKKZFCQTCHESF
     nickname: 博启小分队
+
+simbot:
+  # bot 注册完成后自动启动
+  auto-start-bots: true
+  # bot资源文件的扫描路径
+  bot-configuration-resources:
+    - 'classpath:simbot-bots/*.bot*'

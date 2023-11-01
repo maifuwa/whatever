@@ -100,12 +100,19 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
-        <!--qq机器人-->
-<!--        <dependency>-->
-<!--            <groupId>net.itbaima</groupId>-->
-<!--            <artifactId>spring-boot-starter-itbaima-robot</artifactId>-->
-<!--            <version>1.0.3</version>-->
-<!--        </dependency>-->
+        <!--qq bot-->
+        <dependency>
+            <groupId>love.forte.simbot.boot</groupId>
+            <artifactId>simboot-core-spring-boot-starter</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+        <!-- mirai组件 -->
+        <dependency>
+            <groupId>love.forte.simbot.component</groupId>
+            <artifactId>simbot-component-mirai-core</artifactId>
+            <version>3.2.0.0</version>
+        </dependency>
 
     </dependencies>
 
