@@ -6,10 +6,15 @@ import com.example.study.pojo.dto.course.ClassSchedule;
 import com.example.study.pojo.dto.course.Course;
 import com.example.study.repository.course.ClassScheduleRepository;
 import com.example.study.server.ReminderService;
+import com.example.study.utils.BotUtil;
 import com.example.study.utils.CourseTimeUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import love.forte.simbot.Identifies;
+import love.forte.simbot.component.mirai.bot.MiraiBot;
+import love.forte.simbot.definition.Group;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +31,6 @@ public class ReminderServiceByQQBotImpl implements ReminderService {
     @Autowired
     CourseTimeUtil timeUtil;
 
-//    @Autowired
-//    RobotService robotService;
-
     @Autowired
     ClassScheduleRepository scheduleRepository;
 
@@ -36,7 +38,9 @@ public class ReminderServiceByQQBotImpl implements ReminderService {
     @Transactional
     public void reminderClass() {
         String courseNum = timeUtil.getCourseNum();
-        List<ClassSchedule> schedules = scheduleRepository.getSchoolSchedulesByCourseNumLike(courseNum);
+        int day = timeUtil.getNowDay();
+        String week = timeUtil.getNowWeek();
+        List<ClassSchedule> schedules = scheduleRepository.getSchoolSchedulesByCourseNumLikeAndDayAndWeekLike(courseNum, day, week);
         for (ClassSchedule schedule : schedules) {
             List<Account> accounts = schedule.getAccounts();
             for (Account account : accounts) {
@@ -45,6 +49,8 @@ public class ReminderServiceByQQBotImpl implements ReminderService {
         }
     }
 
+    @Autowired
+    BotUtil botUtil;
 
     private void reminderToAccount(ClassSchedule schedule ,Course course, ClassRoom classRoom, Account account) {
         String message = "你好: " + account.getName()
@@ -53,6 +59,17 @@ public class ReminderServiceByQQBotImpl implements ReminderService {
                 + " 请与上课时间五分钟之前赶往：" + classRoom.getLocation()
                 + " 上课";
         log.info(message);
-        // robotService.sendMessageToGroup(account.getQQNum(), message);
+
+        this.botSendMessage(message);
+    }
+
+    @Value("${Spring.groupId:368958573}")
+    String groupId;
+
+    private void botSendMessage(String message) {
+        MiraiBot bot = (MiraiBot) botUtil.findBot();
+        Group group = bot.getGroup(Identifies.ID(groupId));
+        assert group != null;
+        group.sendBlocking(message);
     }
 }

@@ -20,5 +20,5 @@ public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Lo
 
     List<ClassSchedule> getClassSchedulesByAccountsContains(Account account);
 
-    List<ClassSchedule> getSchoolSchedulesByCourseNumLike(String like);
+    List<ClassSchedule> getSchoolSchedulesByCourseNumLikeAndDayAndWeekLike(String courseNum, int day, String week);
 }

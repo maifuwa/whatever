@@ -2,8 +2,10 @@ package com.example.study.utils;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,19 @@ import java.util.regex.Pattern;
 
 @Component
 public class CourseTimeUtil {
+
+    public int getNowDay() {
+        LocalDate now = LocalDate.now();
+        return now.getDayOfWeek().getValue();
+    }
+
+    public String getNowWeek() {
+        LocalDate now = LocalDate.now();
+        LocalDate begin = LocalDate.of(2023, 9, 11);
+        long weeksBetween = ChronoUnit.WEEKS.between(begin, now);
+
+        return "%," + weeksBetween + ",%";
+    }
 
     public Integer parseDay(String day) {
         return switch (day) {
@@ -30,7 +45,7 @@ public class CourseTimeUtil {
     }
 
     public String getCourseNum() {
-        String now = DateTimeFormatter.ofPattern("hh").format(LocalTime.now());
+        String now = DateTimeFormatter.ofPattern("HH").format(LocalTime.now());
         return switch (now) {
             case "08" -> "1-%";
             case "09" -> "3-%";
@@ -91,6 +106,52 @@ public class CourseTimeUtil {
             return new String[]{start, end};
         }
 
+        return null;
+    }
+
+    public String parseWeek(String week) {
+        StringBuilder buffer = new StringBuilder(",");
+        if (week.contains(",")) {
+            String[] weeks = week.split(",");
+            for (String allWeek : weeks) {
+                if (allWeek.contains("-")) {
+                    buffer.append(this.parseDoubleWeek(allWeek));
+                }else {
+                    buffer.append(this.parseSingleWeek(allWeek));
+                }
+            }
+        }else if (week.contains("-")) {
+            buffer.append(this.parseDoubleWeek(week));
+        }else {
+            buffer.append(this.parseSingleWeek(week));
+        }
+        return buffer.toString();
+    }
+
+    private String parseSingleWeek(String week) {
+        Pattern pattern = Pattern.compile("(\\d+)周");
+        Matcher matcher = pattern.matcher(week);
+        if (matcher.find()) {
+            return matcher.group(1) + ",";
+        }
+        return null;
+    }
+
+    private String parseDoubleWeek(String week) {
+        Pattern pattern = Pattern.compile("(\\d+)-(\\d+)周");
+        Matcher matcher = pattern.matcher(week);
+        if (matcher.find()) {
+            int start = Integer.parseInt(matcher.group(1));
+            int end = Integer.parseInt(matcher.group(2));
+            StringBuilder weeks = new StringBuilder();
+            for (int i = start; i <= end; i ++) {
+                if (i % 2 == 0 && week.contains("单")) {
+                    continue;
+                }
+                weeks.append(i).append(",");
+            }
+            return weeks.toString();
+        }
         return null;
     }
 

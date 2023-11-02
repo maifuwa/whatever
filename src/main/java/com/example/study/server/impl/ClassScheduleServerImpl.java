@@ -192,8 +192,7 @@ public class ClassScheduleServerImpl implements ClassScheduleServer {
             String teacher = kb.getString("xm");
             String courseNum = kb.getString("jc");
             Integer day = timeUtil.parseDay(kb.getString("xqjmc"));
-            String week = kb.getString("zcd");
-
+            String week = timeUtil.parseWeek(kb.getString("zcd"));
 
             this.addCourse(name, fullName, credit, category, nature);
             this.addClassRoom(location, building, campus);
@@ -205,11 +204,27 @@ public class ClassScheduleServerImpl implements ClassScheduleServer {
         return this.getSchedulesForAccount(accountId);
     }
 
+
+
+    @Override
+    @Transactional
+    public List<CourseTableVo> updateSchedulesForAccount(Integer accountId, String courseJson) {
+        Account account = accountRepository.findById(accountId).get();
+        List<ClassSchedule> schedules = this.getSchedulesFormAccount(accountId).stream()
+                .peek(schedule -> schedule.getAccounts().remove(account))
+                .toList();
+
+        scheduleRepository.saveAll(schedules);
+        return this.parseCourseJson(accountId, courseJson);
+    }
+
     @Override
     @Transactional
     public List<CourseTableVo> getSchedulesForAccount(Integer accountId) {
         return this.parseSchedulesToVo(this.getSchedulesFormAccount(accountId));
     }
+
+
 
     @Override
     @Transactional

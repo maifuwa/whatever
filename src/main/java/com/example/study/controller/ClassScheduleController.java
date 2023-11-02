@@ -43,6 +43,20 @@ public class ClassScheduleController {
         return RestBean.success(vos);
     }
 
+    @PostMapping("/update")
+    public RestBean<List<CourseTableVo>> updateAccountCourse(String course, String password, HttpServletRequest request) {
+        if (! verifiycode.equals(password)) {
+            return RestBean.failure(401, "请先联系管理员获取邀请码");
+        }
+
+        Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);
+        List<CourseTableVo> vos = scheduleServer.updateSchedulesForAccount(accountId, course);
+        if (vos == null) {
+            return RestBean.failure(400, "更新课程表失败，请联系管理员");
+        }
+        return RestBean.success(vos);
+    }
+
     @GetMapping("/obtain")
     public RestBean<List<CourseTableVo>> obtainAccountCourse(HttpServletRequest request) {
         Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);

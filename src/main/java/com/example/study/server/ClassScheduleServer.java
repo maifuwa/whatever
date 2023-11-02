@@ -30,6 +30,8 @@ public interface ClassScheduleServer {
 
     List<CourseTableVo> parseCourseJson(Integer accountId, String courseJson);
 
+    List<CourseTableVo> updateSchedulesForAccount(Integer accountId, String courseJson);
+
     List<CourseTableVo> getSchedulesForAccount(Integer accountId);
 
     List<CourseTableVo> parseSchedulesToVo(List<ClassSchedule> schedules);
