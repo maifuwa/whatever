@@ -41,6 +41,8 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/avatar/*").permitAll()
+                        .requestMatchers("/api/auth/changeprofile").hasAnyAuthority(UserConst.ROLE_DEFAULT)
                         .anyRequest().hasAnyAuthority(UserConst.ROLE_DEFAULT)
                 )
                 .formLogin(conf -> conf

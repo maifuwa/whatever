@@ -1,6 +1,7 @@
 package com.example.study.controller;
 
 import com.example.study.constant.MailConst;
+import com.example.study.constant.UserConst;
 import com.example.study.pojo.RestBean;
 import com.example.study.pojo.vo.request.RegisterVo;
 import com.example.study.pojo.vo.request.ResetPwdVo;
@@ -49,15 +50,19 @@ public class AuthorizeController {
 
     @PostMapping("/verifyemail")
     public RestBean<String> doVerify(@Email String email, String type, HttpServletRequest request) {
-        if (! email.toLowerCase().contains("qq")) {
-            return RestBean.failure(400, "目前只支持qq邮箱");
-        }
+//        if (! email.toLowerCase().contains("qq")) {
+//            return RestBean.failure(400, "目前只支持qq邮箱");
+//        }
         if (MailConst.VERIFY_EMAIL_TYPE.contains(type)) {
             return RestBean.success(accountServer.sendEmailVerifyCode(type, email, request.getRemoteAddr(), request.getHeader("User-Agent")));
         }
         return RestBean.failure(400, "参数错误");
     }
 
-
+    @PostMapping("/changeprofile")
+    public RestBean<AccountVo> changProfile(String name, String introduction, HttpServletRequest request) {
+        Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);
+        return this.parseAccountVo(accountServer.changeProfile(accountId, name, introduction));
+    }
 
 }

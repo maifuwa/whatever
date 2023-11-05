@@ -35,6 +35,9 @@ public class Account {
     @ManyToMany(cascade = {CascadeType.PERSIST})
     List<Role> roles;
 
+    @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    AccountDetail detail;
+
     public long getQQNum() {
         String qqNum = this.email.split("@")[0];
         return Long.getLong(qqNum);

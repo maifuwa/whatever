@@ -26,7 +26,8 @@ public class AccountTest {
     @Autowired
     PasswordEncoder encoder;
 
-    public List<Role> addRoles() {
+    @Test
+    public void addRoles() {
         Role role = new Role();
         role.setRoleName(UserConst.ROLE_DEFAULT);
         Role role1 = new Role();
@@ -35,7 +36,7 @@ public class AccountTest {
         role2.setRoleName(UserConst.ROLE_MODERATOR);
         Role role3 = new Role();
         role3.setRoleName(UserConst.ROLE_ADMINISTRATOR);
-        return List.of(role, role1, role2, role3);
+        System.out.println(roleRepository.saveAll(List.of(role, role1, role2, role3)));
     }
 
     @Test
@@ -44,7 +45,7 @@ public class AccountTest {
         account.setName("张三");
         account.setEmail("46546564565@qq.com");
         account.setPassword(encoder.encode("123456789"));
-        account.setRoles(addRoles());
+
         System.out.println(repository.save(account));
     }
 

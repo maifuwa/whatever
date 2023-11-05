@@ -17,5 +17,6 @@ public interface AccountServer extends UserDetailsService {
     AccountVo registerAccount(String type, RegisterVo vo);
     AccountVo resetPassword(String type, ResetPwdVo vo);
     AccountVo setAccountVo(Account account);
+    AccountVo changeProfile(Integer accountId, String name, String introduction);
 
 }

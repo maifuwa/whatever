@@ -3,6 +3,7 @@ package com.example.study.server.impl;
 import com.example.study.constant.MailConst;
 import com.example.study.constant.UserConst;
 import com.example.study.pojo.dto.auth.Account;
+import com.example.study.pojo.dto.auth.AccountDetail;
 import com.example.study.pojo.dto.auth.Role;
 import com.example.study.pojo.vo.request.RegisterVo;
 import com.example.study.pojo.vo.request.ResetPwdVo;
@@ -120,6 +121,10 @@ public class AccountServerImpl implements AccountServer {
             List<Role> roles = roleRepository.findRolesByRoleNameIn(UserConst.ROLE_DEFAULT);
             account.setRoles(roles);
             accountRepository.save(account);
+            AccountDetail detail = new AccountDetail();
+            detail.setAvatarUrl("http://127.0.0.1:8080/avatar/default_avatar.png");
+            detail.setIntroduction("这个用户很懒，什么都没有写");
+            account.setDetail(detail);
             return setAccountVo(account);
         }
         return accountVo;
@@ -141,6 +146,13 @@ public class AccountServerImpl implements AccountServer {
         return accountVo;
     }
 
+    @Override
+    public AccountVo changeProfile(Integer accountId, String name, String introduction) {
+        Account account = accountRepository.findById(accountId).get();
+        account.setName(name);
+        account.getDetail().setIntroduction(introduction);
+        return this.setAccountVo(accountRepository.save(account));
+    }
 
     public AccountVo setAccountVo(Account account) {
         AccountVo accountVo = new AccountVo();
@@ -149,8 +161,8 @@ public class AccountServerImpl implements AccountServer {
         String jwt = jwtUtil.createJwt(account, roles, expireTime);
 
         accountVo.setName(account.getName());
-        accountVo.setRoles(roles);
-        accountVo.setExpireTime(expireTime);
+        accountVo.setAvatarUrl(account.getDetail().getAvatarUrl());
+        accountVo.setIntroduction(account.getDetail().getIntroduction());
         accountVo.setToken(jwt);
         return accountVo;
     }

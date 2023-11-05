@@ -24,6 +24,7 @@ public class CorsFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         if ( request.getHeader("Origin") == null || !request.getHeader("Origin").contains("localhost")) {
+            chain.doFilter(request, response);
             return;
         }
 
