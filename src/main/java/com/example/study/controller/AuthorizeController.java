@@ -43,7 +43,7 @@ public class AuthorizeController {
 
     private RestBean<AccountVo> parseAccountVo(AccountVo vo) {
         if (vo.getToken().length() < 50) {
-            return RestBean.failure(400, vo.getToken());
+            return RestBean.unauthorized(vo.getToken());
         }
         return RestBean.success(vo);
     }
@@ -56,7 +56,7 @@ public class AuthorizeController {
         if (MailConst.VERIFY_EMAIL_TYPE.contains(type)) {
             return RestBean.success(accountServer.sendEmailVerifyCode(type, email, request.getRemoteAddr(), request.getHeader("User-Agent")));
         }
-        return RestBean.failure(400, "参数错误");
+        return RestBean.unauthorized("参数错误");
     }
 
     @PostMapping("/changeprofile")

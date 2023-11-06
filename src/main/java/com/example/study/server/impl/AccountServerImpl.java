@@ -141,7 +141,7 @@ public class AccountServerImpl implements AccountServer {
             Account account = accountRepository.findAccountByEmailOrName(vo.getEmail());
             account.setPassword(passwordEncoder.encode(vo.getPassword()));
             accountRepository.save(account);
-            return setAccountVo(account);
+            return this.setAccountVo(account);
         }
         return accountVo;
     }
@@ -149,8 +149,14 @@ public class AccountServerImpl implements AccountServer {
     @Override
     public AccountVo changeProfile(Integer accountId, String name, String introduction) {
         Account account = accountRepository.findById(accountId).get();
+        if (!name.equals(account.getName()) && accountRepository.findAccountByEmailOrName(name) != null) {
+            AccountVo vo = new AccountVo();
+            vo.setToken("名字已被占用");
+        }
         account.setName(name);
-        account.getDetail().setIntroduction(introduction);
+        if (!introduction.isBlank()) {
+            account.getDetail().setIntroduction(introduction);
+        }
         return this.setAccountVo(accountRepository.save(account));
     }
 

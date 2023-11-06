@@ -61,7 +61,7 @@ public class ClassScheduleController {
     public RestBean<List<CourseTableVo>> obtainAccountCourse(HttpServletRequest request) {
         Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);
         List<CourseTableVo> vos = scheduleServer.getSchedulesForAccount(accountId);
-        if (vos == null) {
+        if (vos == null || vos.isEmpty()) {
             return RestBean.failure(400, "获取课程表失败，请先添加课程表;如已添加，请联系管理员");
         }
         return RestBean.success(vos);
