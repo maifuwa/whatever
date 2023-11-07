@@ -11,6 +11,7 @@ import com.example.study.pojo.vo.response.AccountVo;
 import com.example.study.repository.auth.AccountRepository;
 import com.example.study.repository.auth.RoleRepository;
 import com.example.study.server.AccountServer;
+import com.example.study.server.FileUploadServer;
 import com.example.study.utils.JwtUtil;
 import com.example.study.utils.SimpleUtils;
 import jakarta.annotation.Resource;
@@ -24,10 +25,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -122,7 +125,7 @@ public class AccountServerImpl implements AccountServer {
             account.setRoles(roles);
             accountRepository.save(account);
             AccountDetail detail = new AccountDetail();
-            detail.setAvatarUrl("http://127.0.0.1:8080/avatar/default_avatar.png");
+            detail.setAvatarUrl("/avatar/default_avatar.png");
             detail.setIntroduction("这个用户很懒，什么都没有写");
             account.setDetail(detail);
             return setAccountVo(account);
@@ -157,6 +160,23 @@ public class AccountServerImpl implements AccountServer {
         if (!introduction.isBlank()) {
             account.getDetail().setIntroduction(introduction);
         }
+        return this.setAccountVo(accountRepository.save(account));
+    }
+
+    @Autowired
+    FileUploadServer fileUploadServer;
+
+    @Override
+    public AccountVo changeAvatar(Integer accountId, MultipartFile avatarFile) {
+        if (avatarFile.isEmpty()) {
+            AccountVo vo = new AccountVo();
+            vo.setToken("请先上传文件");
+            return vo;
+        }
+        Account account = accountRepository.findById(accountId).get();
+        String avatarPath = Optional.ofNullable(fileUploadServer.uploadAvatar(avatarFile))
+                        .orElse(account.getDetail().getAvatarUrl());
+        account.getDetail().setAvatarUrl(avatarPath);
         return this.setAccountVo(accountRepository.save(account));
     }
 

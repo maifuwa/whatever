@@ -12,11 +12,13 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author: maifuwa
@@ -60,9 +62,16 @@ public class AuthorizeController {
     }
 
     @PostMapping("/changeprofile")
+    @PreAuthorize("hasAnyAuthority('user')")
     public RestBean<AccountVo> changProfile(String name, String introduction, HttpServletRequest request) {
         Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);
         return this.parseAccountVo(accountServer.changeProfile(accountId, name, introduction));
     }
 
+    @PostMapping("/changeavatar")
+    @PreAuthorize("hasAnyAuthority('user')")
+    public RestBean<AccountVo> changeAvatar(MultipartFile file, HttpServletRequest request) {
+        Integer accountId = (Integer) request.getAttribute(UserConst.ATTR_USER_ID);
+        return this.parseAccountVo(accountServer.changeAvatar(accountId, file));
+    }
 }

@@ -5,6 +5,7 @@ import com.example.study.pojo.vo.request.RegisterVo;
 import com.example.study.pojo.vo.request.ResetPwdVo;
 import com.example.study.pojo.vo.response.AccountVo;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author: maifuwa
@@ -18,5 +19,6 @@ public interface AccountServer extends UserDetailsService {
     AccountVo resetPassword(String type, ResetPwdVo vo);
     AccountVo setAccountVo(Account account);
     AccountVo changeProfile(Integer accountId, String name, String introduction);
+    AccountVo changeAvatar(Integer accountId, MultipartFile avatarFile);
 
 }

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Resource
@@ -41,8 +43,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/avatar/*").permitAll()
-                        .requestMatchers("/api/auth/changeprofile").hasAnyAuthority(UserConst.ROLE_DEFAULT)
+                        .requestMatchers("/images/**").permitAll()
                         .anyRequest().hasAnyAuthority(UserConst.ROLE_DEFAULT)
                 )
                 .formLogin(conf -> conf
