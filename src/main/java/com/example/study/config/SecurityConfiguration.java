@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                         .failureHandler(this::handleProcess)
                 )
                 .logout(conf -> conf
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
                 .exceptionHandling(conf -> conf

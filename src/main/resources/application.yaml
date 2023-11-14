@@ -1,10 +1,10 @@
 
 Spring:
   servlet:
+    avatar-path: ./src/main/resources/static/images/avatar
     multipart:
       max-file-size: 1MB
       max-request-size: 1MB
-      avatar-path: ./src/main/resources/static/images/avatar
   verifiycode: 123456789
   thymeleaf:
     cache: false

@@ -20,7 +20,7 @@ import java.util.Objects;
 @Service
 public class FileUploadServerImpl implements FileUploadServer {
 
-    @Value("${Spring.servlet.multipart.avatar-path}")
+    @Value("${Spring.servlet.avatar-path}")
     String avatarPath;
 
     @Autowired

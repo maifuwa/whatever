@@ -83,7 +83,7 @@ public class AccountServerImpl implements AccountServer {
         rabbitTemplate.convertAndSend(MailConst.EMAIL_SEND_MQ, data);
         redisTemplate.opsForValue()
                 .set(key, String.valueOf(code), 5, TimeUnit.MINUTES);
-        return "发送成功";
+        return "邮件已发送，5分钟内有效";
     }
 
     private String canSendEmailVerifyCode(String type, String email) {
@@ -125,7 +125,7 @@ public class AccountServerImpl implements AccountServer {
             account.setRoles(roles);
             accountRepository.save(account);
             AccountDetail detail = new AccountDetail();
-            detail.setAvatarUrl("/avatar/default_avatar.png");
+            detail.setAvatarUrl("/images/avatar/default_avatar.png");
             detail.setIntroduction("这个用户很懒，什么都没有写");
             account.setDetail(detail);
             return setAccountVo(account);
